@@ -64,7 +64,7 @@ h2{font-size:20px;font-weight:700}
 .kpi b{display:block;font:700 24px/1.15 'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums;margin:2px 0}
 .kpi small{font-size:12px;font-weight:600}
 /* séance */
-.wk-head{position:sticky;top:0;z-index:5;margin:calc(-1 * (var(--sat) + 20px)) -16px 0;padding:calc(var(--sat) + 10px) 16px 12px;background:rgba(11,11,13,.86);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.wk-head{position:sticky;top:0;z-index:5;margin:calc(-1 * (var(--sat) + 20px)) -16px 0;padding:calc(var(--sat) + 10px) 16px 12px;background:#0B0B0D;border-bottom:1px solid #18181B}
 .ex{background:var(--s1);border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:12px}
 .ex h3{font-size:19px;line-height:1.15}
 .sug{border-radius:14px;padding:11px 13px;background:var(--ort);display:flex;gap:10px;font-size:13px;line-height:1.4;color:#E4E4E7}
@@ -107,7 +107,8 @@ h2{font-size:20px;font-weight:700}
 .it .in{height:40px}
 .mini{width:36px;height:40px;border:0;border-radius:10px;background:var(--s2);color:var(--mut);display:inline-flex;align-items:center;justify-content:center;padding:0}
 /* nav, sheets */
-nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(17,17,20,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid #222227;padding-bottom:var(--sab)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#111114;border-top:1px solid #222227;padding-bottom:var(--sab);transform:translateZ(0);-webkit-transform:translateZ(0)}
+nav.tabs[hidden]{display:none}
 nav.tabs div{max-width:520px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));height:var(--nav)}
 nav.tabs button{border:0;background:none;color:var(--dim);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;font-weight:600;position:relative}
 nav.tabs button[aria-current=page]{color:var(--or)}
@@ -122,8 +123,8 @@ nav.tabs .live{position:absolute;top:10px;right:calc(50% - 18px);width:8px;heigh
 .opt{width:100%;text-align:left;border:0;background:none;border-bottom:1px solid var(--line);padding:14px 2px;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:15px}
 .opt small{color:var(--dim);font-size:13px}
 @keyframes up{from{transform:translateY(24px);opacity:0}}@keyframes fade{from{opacity:0}}
-#toast{position:fixed;left:50%;top:calc(var(--sat) + 14px);transform:translate(-50%,-140%);z-index:60;background:#26262B;color:var(--ink);padding:12px 18px;border-radius:16px;font-weight:600;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.2,.9,.3,1.2);max-width:calc(100% - 32px);display:flex;gap:10px;align-items:center}
-#toast.show{transform:translate(-50%,0)}#toast.pr{background:var(--amb);color:#1A1205}
+#toast{position:fixed;left:50%;top:calc(var(--sat) + 14px);transform:translate(-50%,-16px);opacity:0;visibility:hidden;pointer-events:none;z-index:60;background:#26262B;color:var(--ink);padding:12px 18px;border-radius:16px;font-weight:600;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.2,.9,.3,1.2),opacity .2s,visibility .2s;max-width:calc(100% - 32px);display:flex;gap:10px;align-items:center}
+#toast.show{transform:translate(-50%,0);opacity:1;visibility:visible}#toast.pr{background:var(--amb);color:#1A1205}
 .pic{flex:none;width:64px;height:64px;border-radius:16px;border:0;padding:5px;background:radial-gradient(circle at 50% 65%,rgba(255,107,26,.13),transparent 68%),var(--s2);display:flex;align-items:center;justify-content:center}
 .pic svg{width:100%;height:100%;display:block}.pic.sm{width:44px;height:44px;border-radius:12px;padding:3px}.pic.xs{width:36px;height:36px;border-radius:10px;padding:2px}
 .pic.xl{width:100%;height:auto;aspect-ratio:1;max-width:300px;margin:0 auto;border-radius:28px;padding:18px}
@@ -136,6 +137,7 @@ nav.tabs .live{position:absolute;top:10px;right:calc(50% - 18px);width:8px;heigh
 </head>
 <body>
 <div id="app"></div>
+<nav class="tabs" id="nav" aria-label="Navigation"></nav>
 <div id="toast" role="status" aria-live="polite"></div>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
 <script>
@@ -400,6 +402,11 @@ const findTpl = id => { for (const p of S.meta.programs) { const t = p.templates
 const working = w => w.exercises.flatMap(x => x.sets.filter(s => !s.warm).map(s => ({ ...s, ex: x.ex })));
 const volume = w => working(w).reduce((a, s) => a + (s.kg || 0) * (s.reps || 0), 0);
 const bestE1 = (w, ex) => Math.max(0, ...w.exercises.filter(x => x.ex === ex).flatMap(x => x.sets.filter(s => !s.warm).map(s => e1(s.kg, s.reps))));
+const better = (a, b) => !b || a.kg > b.kg || (a.kg === b.kg && a.reps > b.reps);
+const topSet = (sets) => sets.filter(s => !s.warm && s.kg > 0 && s.reps > 0).reduce((b, s) => better(s, b) ? s : b, null);
+const wTop = (w, ex) => topSet(w.exercises.filter(x => x.ex === ex).flatMap(x => x.sets));
+const recordOf = (ex, before = Infinity) => Object.values(S.workouts).filter(w => w.start < before).map(w => wTop(w, ex)).reduce((b, s) => s && better(s, b) ? s : b, null);
+const prGain = p => p.type === 'reps' ? `+${p.gainReps} rep${p.gainReps > 1 ? 's' : ''}` : `+${fr(p.gain)} kg`;
 const histBest = (ex, before) => Math.max(0, ...Object.values(S.workouts).filter(w => w.start < before).map(w => bestE1(w, ex)));
 const lastWith = (ex, before = Infinity) => sorted().find(w => w.start < before && w.exercises.some(x => x.ex === ex));
 const tplMuscles = t => [...new Set(t.items.map(i => exById(i.ex).m))].slice(0, 3).join(' · ');
@@ -480,11 +487,8 @@ function finishWorkout() {
   if (!exercises.length) { S.active = null; saveLocal(); go('home'); toast('Séance vide, rien n\'a été enregistré'); return; }
   const w = { id: gid('w-'), name: a.name, templateId: a.templateId, programId: a.programId, start: a.start, end, exercises, prs: [] };
   for (const ex of [...new Set(exercises.map(x => x.ex))]) {
-    const hb = histBest(ex, w.start), cur = bestE1(w, ex);
-    if (hb > 0 && cur > hb + 0.01) {
-      const top = exercises.filter(x => x.ex === ex).flatMap(x => x.sets).filter(s => !s.warm).reduce((b, s) => e1(s.kg, s.reps) > e1(b.kg, b.reps) ? s : b);
-      w.prs.push({ ex, kg: top.kg, reps: top.reps, e1: cur, gain: cur - hb });
-    }
+    const old = recordOf(ex, w.start), top = wTop(w, ex);
+    if (old && top && better(top, old)) w.prs.push(top.kg > old.kg ? { ex, kg: top.kg, reps: top.reps, type: 'kg', gain: top.kg - old.kg } : { ex, kg: top.kg, reps: top.reps, type: 'reps', gainReps: top.reps - old.reps });
   }
   S.workouts[w.id] = w; S.dirty.push(w.id); S.active = null; saveLocal(); flush();
   U.bilanId = w.id; go('bilan');
@@ -559,7 +563,7 @@ function vWorkout() {
   const r = a.rest, left = r ? Math.max(0, r.end - Date.now()) : 0;
   return `<div class="wk-head"><div class="row sb">
       <button class="ico round" data-a="go" data-v="home" aria-label="Réduire la séance">${ic('down', 20)}</button>
-      <div style="text-align:center"><b style="font-family:'Space Grotesk';font-size:18px">${esc(a.name)}</b><div class="mut num" style="font-size:13px" data-elapsed>${clock(Date.now() - a.start)}</div></div>
+      <div style="text-align:center"><b style="font-family:'Space Grotesk',sans-serif;font-size:18px">${esc(a.name)}</b><div class="mut num" style="font-size:13px" data-elapsed>${clock(Date.now() - a.start)}</div></div>
       <button class="btn sm" data-a="finish">Terminer</button></div>
       <div style="margin-top:10px" class="bar"><i style="width:${total ? done / total * 100 : 0}%"></i></div></div>
     <div class="stack" style="margin-top:14px;${r ? 'padding-bottom:130px' : ''}">
@@ -597,7 +601,7 @@ function vBilan() {
       <div class="kpi"><span class="mut" style="font-size:12px">Durée</span><b>${dur} min</b>${dl(dur, pd, ' min', -1)}</div>
       <div class="kpi"><span class="mut" style="font-size:12px">RPE moyen</span><b>${avg ? fr(avg) : '–'}</b><small class="dim">${rpes.length ? rpes.length + ' séries notées' : 'non renseigné'}</small></div>
     </div>
-    ${w.prs && w.prs.length ? `<div class="card stack"><div class="row"><span class="badge amb">${ic('trophy')}</span><b style="font-size:16px">${w.prs.length} nouveau${w.prs.length > 1 ? 'x' : ''} record${w.prs.length > 1 ? 's' : ''}</b></div>${w.prs.map(p => `<div class="row sb"><span><b style="font-size:14px">${esc(exById(p.ex).name)}</b><span class="mut" style="display:block;font-size:12px">${fr(p.kg)} kg × ${p.reps} · 1RM est. ${fr(p.e1)} kg</span></span><b class="amb num" style="font-size:13px;white-space:nowrap">+${fr(p.gain)} kg</b></div>`).join('')}</div>` : ''}
+    ${w.prs && w.prs.length ? `<div class="card stack"><div class="row"><span class="badge amb">${ic('trophy')}</span><b style="font-size:16px">${w.prs.length} nouveau${w.prs.length > 1 ? 'x' : ''} record${w.prs.length > 1 ? 's' : ''}</b></div>${w.prs.map(p => `<div class="row sb"><span><b style="font-size:14px">${esc(exById(p.ex).name)}</b><span class="mut" style="display:block;font-size:12px">${fr(p.kg)} kg × ${p.reps}</span></span><b class="amb num" style="font-size:13px;white-space:nowrap">${prGain(p)}</b></div>`).join('')}</div>` : ''}
     ${comp ? `<div class="card stack"><b style="font-size:15px">Comparé à la dernière ${esc(w.name)}</b><span class="dim" style="font-size:12px;margin-top:-8px">Évolution du 1RM estimé par exercice</span>${comp}</div>` : ''}
     ${tips ? `<div class="card" style="background:var(--ort)"><div class="lbl" style="color:var(--orl)">POUR LA PROCHAINE FOIS</div><ul style="margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.6;color:#E4E4E7">${tips}</ul></div>` : ''}
     <div class="card stack"><b style="font-size:15px">Détail</b>${w.exercises.map(x => `<div class="row" style="align-items:flex-start"><span class="pic xs">${picto(x.ex, false)}</span><div><div style="font-size:14px;font-weight:600">${esc(exById(x.ex).name)}</div><div class="mut num" style="font-size:13px">${x.sets.map(s => `${s.warm ? 'É ' : ''}${fr(s.kg)}×${s.reps}${s.rpe ? ` @${fr(s.rpe)}` : ''}`).join(' · ')}</div></div></div>`).join('')}</div>
@@ -614,7 +618,7 @@ function vStats() {
   if (!U.statEx || !freq[U.statEx]) U.statEx = exs[0] || null;
   const pts = U.statEx ? ws.filter(w => w.start >= from).slice().reverse().map(w => ({ t: w.start, v: Math.round(bestE1(w, U.statEx) * 10) / 10 })).filter(p => p.v > 0) : [];
   const cur = pts.length ? pts[pts.length - 1].v : null, gain = pts.length > 1 ? cur - pts[0].v : null;
-  const allBest = U.statEx ? Math.max(0, ...ws.map(w => bestE1(w, U.statEx))) : 0;
+  const rec = U.statEx ? recordOf(U.statEx) : null;
   const span = Math.max(1, Math.min(P, (Date.now() - ws[ws.length - 1].start) / DAY + 1) / 7);
   const cnt = {}; inP.forEach(w => working(w).forEach(s => { const m = exById(s.ex).m; cnt[m] = (cnt[m] || 0) + 1; }));
   const mus = MUSCLES.filter(m => cnt[m] || activeProg()?.templates.some(t => t.items.some(i => exById(i.ex).m === m))).map(m => ({ m, v: (cnt[m] || 0) / span }));
@@ -628,23 +632,37 @@ function vStats() {
     <div class="seg" role="group" aria-label="Période">${[[30, '1M'], [90, '3M'], [182, '6M'], [365, '1A']].map(([d, l]) => `<button data-a="period" data-p="${d}" aria-pressed="${P === d}">${l}</button>`).join('')}</div>
     <div class="kpis" style="grid-template-columns:repeat(3,minmax(0,1fr))"><div class="kpi"><span class="mut" style="font-size:12px">Séances</span><b>${inP.length}</b></div><div class="kpi"><span class="mut" style="font-size:12px">Séries</span><b>${inP.reduce((a, w) => a + working(w).length, 0)}</b></div><div class="kpi"><span class="mut" style="font-size:12px">Tonnage</span><b>${vol >= 1e4 ? fr(vol / 1000) + ' t' : big(vol) + ' kg'}</b></div></div>
     <div class="card stack">
-      ${exs.length ? `<label class="sr" for="statEx" style="position:absolute;left:-9999px">Exercice</label><select class="sel" id="statEx" data-f="statEx">${exs.map(e => `<option value="${esc(e)}"${e === U.statEx ? ' selected' : ''}>${esc(exById(e).name)}</option>`).join('')}</select>` : ''}
-      <div class="row sb" style="align-items:flex-end"><div><div class="mut" style="font-size:12px">1RM estimé</div><div class="num" style="font:700 36px/1 'Space Grotesk'">${cur ? fr(cur) + ' kg' : '–'}</div></div>
-        <div style="text-align:right;font-size:13px;font-weight:700">${gain != null ? `<span class="${gain >= 0 ? 'or' : 'red'}">${gain >= 0 ? '+' : '−'}${fr(Math.abs(gain))} kg</span><div class="dim" style="font-weight:500;font-size:12px">sur la période</div>` : ''}${allBest ? `<div class="amb" style="font-size:12px;margin-top:2px">Record : ${fr(allBest)} kg</div>` : ''}</div></div>
+      ${exs.length ? `<label for="statEx" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Exercice</label><select class="sel" id="statEx" data-f="statEx">${exs.map(e => `<option value="${esc(e)}"${e === U.statEx ? ' selected' : ''}>${esc(exById(e).name)}</option>`).join('')}</select>` : ''}
+      <div class="row sb" style="align-items:flex-end"><div><div class="mut" style="font-size:12px">1RM estimé <span class="dim">· calcul</span></div><div class="num" style="font:700 36px/1 'Space Grotesk',sans-serif">${cur ? fr(cur) + ' kg' : '–'}</div></div>
+        <div style="text-align:right;font-size:13px;font-weight:700">${gain != null ? `<span class="${gain >= 0 ? 'or' : 'red'}">${gain >= 0 ? '+' : '−'}${fr(Math.abs(gain))} kg</span><div class="dim" style="font-weight:500;font-size:12px">sur la période</div>` : ''}${rec ? `<div class="amb" style="font-size:12px;margin-top:2px">Record : ${fr(rec.kg)} kg × ${rec.reps}</div>` : ''}</div></div>
       <div class="fig" id="fig" data-pts="${esc(JSON.stringify(pts))}"></div>
     </div>
     <div class="card stack"><div class="row sb"><b style="font-size:15px">Volume par muscle</b><span class="dim" style="font-size:12px">séries / semaine</span></div>
       ${mus.map(({ m, v }) => { const low = v < 10; return `<div class="mrow"><div class="row sb" style="font-size:13px"><b>${esc(m)}</b><b class="num ${low ? 'red' : v > 20 ? 'amb' : ''}">${fr(v)}${low ? ' · sous la cible' : v > 20 ? ' · au-dessus' : ''}</b></div><div class="track"><span class="zone"></span><span class="fill" style="width:${Math.min(100, v / 24 * 100)}%;${low ? 'background:var(--red)' : ''}"></span></div></div>`; }).join('')}
       <div class="row dim" style="font-size:12px;gap:8px"><span style="width:18px;height:8px;border-radius:2px;background:#34343C;display:inline-block"></span>Zone cible conseillée : 10 à 20 séries par semaine</div></div>
     <div class="card stack"><div class="row sb"><b style="font-size:15px">Régularité</b><span class="dim" style="font-size:12px">12 dernières semaines</span></div>
-      <div class="row" style="gap:22px"><div><b class="num" style="font:700 24px 'Space Grotesk'">${last12}</b><div class="mut" style="font-size:12px">séances</div></div><div><b class="num" style="font:700 24px 'Space Grotesk'">${fr(last12 / 12)}</b><div class="mut" style="font-size:12px">par semaine</div></div><div><b class="num or" style="font:700 24px 'Space Grotesk'">${streakWeeks(ws)}</b><div class="mut" style="font-size:12px">sem. d'affilée</div></div></div>
+      <div class="row" style="gap:22px"><div><b class="num" style="font:700 24px 'Space Grotesk',sans-serif">${last12}</b><div class="mut" style="font-size:12px">séances</div></div><div><b class="num" style="font:700 24px 'Space Grotesk',sans-serif">${fr(last12 / 12)}</b><div class="mut" style="font-size:12px">par semaine</div></div><div><b class="num or" style="font:700 24px 'Space Grotesk',sans-serif">${streakWeeks(ws)}</b><div class="mut" style="font-size:12px">sem. d'affilée</div></div></div>
       <div class="heat" role="img" aria-label="Calendrier des séances des 12 dernières semaines, lundi en haut">${cells}</div></div>
-    <div class="stack" style="gap:10px"><h2 style="margin-top:6px">Historique</h2>
-      ${ws.slice(0, U.histN).map(w => `<button class="list-btn" data-a="open" data-id="${esc(w.id)}"><span style="flex:1"><b style="display:block;font-size:15px">${esc(w.name)}</b><span class="mut" style="font-size:13px">${fdate(w.start)} · ${Math.round((w.end - w.start) / 60000)} min</span></span><span style="text-align:right"><b class="num" style="display:block;font-size:14px">${big(volume(w))} kg</b>${w.prs && w.prs.length ? `<span class="amb" style="font-size:12px;font-weight:600">${w.prs.length} record${w.prs.length > 1 ? 's' : ''}</span>` : ''}</span></button>`).join('')}
-      ${ws.length > U.histN ? `<button class="btn sec" data-a="more">Voir plus</button>` : ''}</div>
+    ${vHistory(ws)}
   </div>`;
 }
 
+const MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+function vHistory(ws) {
+  const names = Object.entries(ws.reduce((a, w) => (a[w.name] = (a[w.name] || 0) + 1, a), {})).sort((a, b) => b[1] - a[1]).slice(0, 6).map(e => e[0]);
+  if (U.histF && !names.includes(U.histF)) U.histF = '';
+  const list = ws.filter(w => !U.histF || w.name === U.histF);
+  const groups = []; for (const w of list) { const d = new Date(w.start), k = d.getFullYear() * 12 + d.getMonth(); let g = groups[groups.length - 1]; if (!g || g.k !== k) groups.push(g = { k, label: MOIS[d.getMonth()] + ' ' + d.getFullYear(), ws: [] }); g.ws.push(w); }
+  const shown = groups.slice(0, U.histM || 2);
+  return `<div class="stack" style="gap:12px"><h2 style="margin-top:6px">Historique</h2>
+    ${names.length > 1 ? `<div class="pills" role="group" aria-label="Filtrer par séance"><button class="pill" data-a="histF" data-n="" aria-pressed="${!U.histF}">Toutes</button>${names.map(n => `<button class="pill" data-a="histF" data-n="${esc(n)}" aria-pressed="${U.histF === n}">${esc(n)}</button>`).join('')}</div>` : ''}
+    ${shown.map(g => { const vol = g.ws.reduce((a, w) => a + volume(w), 0); return `<section class="card" style="padding:6px 16px" aria-label="${esc(g.label)}">
+      <div class="row sb" style="padding:10px 0 8px"><b style="font-size:15px">${esc(g.label)}</b><span class="dim num" style="font-size:12px">${g.ws.length} séance${g.ws.length > 1 ? 's' : ''} · ${vol >= 1e4 ? fr(vol / 1000) + ' t' : big(vol) + ' kg'}</span></div>
+      ${g.ws.map(w => { const d = new Date(w.start), np = (w.prs || []).length; return `<button class="opt" data-a="open" data-id="${esc(w.id)}" style="padding:10px 0"><span class="row" style="gap:12px"><span style="width:38px;text-align:center;flex:none"><b class="num" style="display:block;font:700 19px/1 'Space Grotesk',sans-serif">${d.getDate()}</b><span class="dim" style="font-size:11px">${DJ[d.getDay()]}</span></span><span><b style="font-size:15px">${esc(w.name)}</b><span class="dim" style="display:block;font-size:12px">${Math.round((w.end - w.start) / 60000)} min · ${working(w).length} séries</span></span></span>
+        <span style="text-align:right;flex:none"><b class="num" style="display:block;font-size:14px">${big(volume(w))} kg</b>${np ? `<span class="amb" style="font-size:12px;font-weight:600">${ic('trophy', 12)} ${np}</span>` : ''}</span></button>`; }).join('')}
+    </section>`; }).join('')}
+    ${groups.length > shown.length ? `<button class="btn sec" data-a="histMore">Voir ${MOIS[new Date(groups[shown.length].ws[0].start).getMonth()].toLowerCase()} et avant</button>` : ''}</div>`;
+}
 function drawChart() {
   const box = $('#fig'); if (!box) return;
   let pts = []; try { pts = JSON.parse(box.dataset.pts || '[]'); } catch (e) {}
@@ -723,7 +741,7 @@ function vSheet() {
     return `<div class="dim-bg" data-a="closeSheet"><div class="sheet" role="dialog" aria-label="${esc(X.name)}" data-stop="1"><div class="grab"></div>
       <div class="row sb"><div><h2>${esc(X.name)}</h2><div class="mut" style="font-size:13px;margin-top:4px">Muscle ciblé : <span class="or">${esc(X.m)}</span></div></div><button class="ico round" data-a="closeSheet" aria-label="Fermer">${ic('x', 18)}</button></div>
       <div class="pic xl">${picto(sh.id)}</div>
-      ${(() => { const l = lastWith(sh.id), b = Math.max(0, ...Object.values(S.workouts).map(w => bestE1(w, sh.id))); return `<div class="kpis"><div class="kpi"><span class="mut" style="font-size:12px">Record 1RM est.</span><b>${b ? fr(b) + ' kg' : '–'}</b></div><div class="kpi"><span class="mut" style="font-size:12px">Dernière fois</span><b style="font-size:18px">${l ? rel(l.start) : 'jamais'}</b></div></div>`; })()}</div></div>`;
+      ${(() => { const l = lastWith(sh.id), b = recordOf(sh.id); return `<div class="kpis"><div class="kpi"><span class="mut" style="font-size:12px">Record</span><b>${b ? `${fr(b.kg)} kg × ${b.reps}` : '–'}</b></div><div class="kpi"><span class="mut" style="font-size:12px">Dernière fois</span><b style="font-size:18px">${l ? rel(l.start) : 'jamais'}</b></div></div>`; })()}</div></div>`;
   }
   if (sh.t === 'exMenu') {
     const x = S.active && S.active.exercises[sh.e]; if (!x) return '';
@@ -754,16 +772,18 @@ function vDialog() {
 }
 const ask = (title, text, ok, fn, danger) => { U.dialog = { title, text, ok, fn, danger }; render(); };
 
-function nav() {
+function paintNav() {
   const tabs = [['home', 'home', 'Accueil'], ['workout', 'lift', 'Séance'], ['stats', 'stats', 'Stats'], ['programs', 'prog', 'Programmes']];
   const cur = U.view === 'bilan' || U.view === 'settings' ? (U.view === 'bilan' ? 'stats' : 'home') : U.view;
-  return `<nav class="tabs" aria-label="Navigation"><div>${tabs.map(([v, i, l]) => `<button data-a="go" data-v="${v}"${cur === v ? ' aria-current="page"' : ''}>${ic(i, 22)}${l}${v === 'workout' && S.active ? '<span class="live" aria-label="séance en cours"></span>' : ''}</button>`).join('')}</div></nav>`;
+  const el = $('#nav'); if (!el) return; el.hidden = U.view === 'auth' || U.view === 'splash';
+  const html = `<div>${tabs.map(([v, i, l]) => `<button data-a="go" data-v="${v}"${cur === v ? ' aria-current="page"' : ''}>${ic(i, 22)}${l}${v === 'workout' && S.active ? '<span class="live" aria-label="séance en cours"></span>' : ''}</button>`).join('')}</div>`;
+  if (paintNav.last !== html) { el.innerHTML = html; paintNav.last = html; }
 }
 
 function render() {
-  if (U.view === 'auth') { $('#app').innerHTML = vAuth() + vDialog(); return; }
+  if (U.view === 'auth') { $('#app').innerHTML = vAuth() + vDialog(); paintNav(); return; }
   const V = { home: vHome, workout: vWorkout, bilan: vBilan, stats: vStats, programs: vPrograms, settings: vSettings }[U.view] || vHome;
-  $('#app').innerHTML = V() + nav() + vSheet() + vDialog();
+  $('#app').innerHTML = V() + vSheet() + vDialog(); paintNav();
   if (U.view === 'stats') drawChart();
 }
 function go(v) { U.view = v; U.sheet = null; render(); window.scrollTo(0, 0); }
@@ -785,7 +805,8 @@ const A = {
   go: d => go(d.v),
   start: d => startWorkout(d.t || null),
   open: d => { U.bilanId = d.id; go('bilan'); },
-  more: () => { U.histN += 10; render(); },
+  histMore: () => { U.histM = (U.histM || 2) + 2; render(); },
+  histF: d => { U.histF = d.n; U.histM = 2; render(); },
   period: d => { U.period = +d.p; render(); },
   check: d => {
     audioOn();
@@ -800,9 +821,9 @@ const A = {
     if (isNaN(reps) || reps < 1) { toast('Indique les répétitions'); render(); return; }
     s.done = true;
     if (!s.warm && kg > 0) {
-      const hb = histBest(x.ex, S.active.start), val = e1(kg, Math.round(reps));
-      const others = S.active.exercises.filter(q => q.ex === x.ex).flatMap(q => q.sets).filter(q => q !== s && q.done && !q.warm).map(q => e1(num(q.kg), Math.round(num(q.reps))));
-      if (hb > 0 && val > Math.max(hb, ...others) + 0.01) toast(`Nouveau record · ${exById(x.ex).name}`, true);
+      const old = recordOf(x.ex, S.active.start), cur = { kg, reps: Math.round(reps) };
+      const others = topSet(S.active.exercises.filter(q => q.ex === x.ex).flatMap(q => q.sets).filter(q => q !== s && q.done).map(q => ({ kg: num(q.kg), reps: Math.round(num(q.reps)), warm: q.warm })));
+      if (old && better(cur, old) && (!others || better(cur, others))) toast(`Nouveau record · ${fr(kg)} kg × ${cur.reps}`, true);
     }
     const sec = x.rest || S.meta.settings.rest;
     if (!s.warm) S.active.rest = { end: Date.now() + sec * 1000, total: sec, fired: false };
