@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#0B0B0D">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -24,7 +24,8 @@
 --or:#FF6B1A;--orl:#FF8A47;--ord:#E5560A;--ort:rgba(255,107,26,.14);--amb:#FFB020;--ambt:rgba(255,176,32,.15);--red:#F87171;--redt:rgba(248,113,113,.14);
 --sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--nav:64px}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
-html{background:var(--bg);height:100%}
+html{background:var(--bg);height:100%;touch-action:manipulation;-webkit-text-size-adjust:100%}
+button,a,input,select,label,.pic{touch-action:manipulation}
 body{min-height:100%;min-height:100vh;min-height:100lvh}
 #app{min-height:100vh;min-height:100lvh}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Inter,system-ui,-apple-system,sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased}
@@ -1275,6 +1276,7 @@ setInterval(() => {
   if (left <= 0) { S.active.rest = null; saveLocal(); buzz(); toast('Repos terminé · à toi de jouer'); const p = $('#rest'); if (p) p.remove(); }
 }, 250);
 window.addEventListener('resize', () => { if (U.view === 'stats') drawChart(); });
+['gesturestart', 'gesturechange'].forEach(t => document.addEventListener(t, e => e.preventDefault(), { passive: false }));
 const VV = window.visualViewport;
 const syncVV = () => { if (!VV) return; const r = document.documentElement.style; r.setProperty('--vvh', VV.height + 'px'); r.setProperty('--vvt', VV.offsetTop + 'px'); };
 if (VV) { VV.addEventListener('resize', syncVV); VV.addEventListener('scroll', syncVV); syncVV(); }
