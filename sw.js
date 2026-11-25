@@ -1,5 +1,5 @@
 // Rift — service worker : l'appli s'ouvre même sans réseau.
-const CACHE = 'rift-v1';
+const CACHE = 'rift-v2';
 const SHELL = ['./', './index.html', './config.js', './logo.png', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './manifest.webmanifest'];
 
 self.addEventListener('install', e => {
