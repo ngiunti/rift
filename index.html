@@ -119,6 +119,8 @@ nav.tabs button[aria-current=page]{color:var(--or)}
 nav.tabs .live{position:absolute;top:10px;right:calc(50% - 18px);width:8px;height:8px;border-radius:50%;background:var(--or);box-shadow:0 0 0 3px rgba(255,107,26,.25)}
 .dim-bg{position:fixed;left:0;right:0;top:var(--vvt,0px);height:var(--vvh,100%);z-index:40;overscroll-behavior:contain;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;animation:fade .18s}
 .sheet{width:min(520px,100%);max-height:calc(var(--vvh,100vh) - 40px);background:#17171A;border-radius:26px 26px 0 0;padding:10px 16px calc(var(--sab) + 18px);display:flex;flex-direction:column;gap:12px;animation:up .22s ease}
+.grabbtn{display:block;width:100%;height:28px;margin:-10px 0 -6px;border:0;background:none;padding:0}
+.grabbtn .grab{display:block}
 .sheet .grab{width:40px;height:5px;border-radius:3px;background:#3F3F46;margin:0 auto 4px}
 .sheet>*{flex-shrink:0}
 .sheet .scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;margin:0 -16px;padding:0 16px 8px;flex:1 1 auto;min-height:0}
@@ -968,7 +970,7 @@ function vSheet() {
   const sh = U.sheet; if (!sh) return '';
   if (sh.t === 'pick' && U.preview) {
     const X = exById(U.preview), b = recordOf(U.preview), dest = sh.ctx === 'tpl' ? 'au programme' : sh.ctx === 'swap' ? 'à la place' : 'à la séance';
-    return `<div class="dim-bg" data-a="closeSheet"><div class="sheet" role="dialog" aria-label="${esc(X.name)}" data-stop="1"><div class="grab"></div>
+    return `<div class="dim-bg" data-a="prevBack"><div class="sheet" role="dialog" aria-label="${esc(X.name)}" data-stop="1"><button class="grabbtn" data-a="prevBack" aria-label="Retour à la liste"><span class="grab"></span></button>
       <div class="row" style="gap:10px"><button class="ico round" data-a="prevBack" aria-label="Retour à la liste">${ic('back', 20)}</button><div style="flex:1"><h2>${esc(X.name)}</h2><div class="mut" style="font-size:13px;margin-top:4px"><span class="or">${esc(X.m)}</span>${muscOf(X).length > 1 ? ' · ' + esc(muscOf(X).slice(1).join(', ')) : ''}</div></div></div>
       <div class="pic xl" style="max-width:260px">${pic(U.preview)}</div>
       ${b ? `<div class="mut" style="text-align:center;font-size:14px">Ton record : <b class="amb">${fr(b.kg)} kg × ${b.reps}</b></div>` : ''}
@@ -1092,7 +1094,7 @@ const A = {
   pickM: (d, el) => { U.pickM = d.m; document.querySelectorAll('.sheet [data-a=pickM]').forEach(p => p.setAttribute('aria-pressed', p.dataset.m === d.m)); const l = $('#pickList'); if (l) { l.innerHTML = pickList(); l.scrollTop = 0; } if (el.scrollIntoView) el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); },
   pickEx: d => { U.preview = null; addPicked(d.id); },
   exPrev: d => { const l = $('#pickList'); U.pickScroll = l ? l.scrollTop : 0; U.preview = d.id; render(); },
-  prevBack: () => { U.preview = null; render(); const l = $('#pickList'); if (l) l.scrollTop = U.pickScroll || 0; },
+  prevBack: (d, el, e) => { if (e && el.classList.contains('dim-bg') && e.target.closest('[data-stop]')) return; U.preview = null; render(); const l = $('#pickList'); if (l) l.scrollTop = U.pickScroll || 0; },
   createEx: () => {
     const name = U.pickQ.trim().slice(0, 50); if (!name) return;
     if (!U.pickM) { toast('Choisis d\'abord le muscle travaillé'); return; }
