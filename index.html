@@ -1075,7 +1075,7 @@ const A = {
   exDel: () => { S.active.exercises.splice(U.sheet.e, 1); U.sheet = null; saveLocal(); render(); },
   exSwap: () => { const e = U.sheet.e; openPicker('swap'); U.sheet.e = e; },
   pick: d => openPicker(d.c, d.t),
-  pickM: (d, el) => { U.pickM = d.m; document.querySelectorAll('.sheet [data-a=pickM]').forEach(p => p.setAttribute('aria-pressed', p.dataset.m === d.m)); const l = $('#pickList'); if (l) { l.innerHTML = pickList(); l.scrollTop = 0; } el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); },
+  pickM: (d, el) => { U.pickM = d.m; document.querySelectorAll('.sheet [data-a=pickM]').forEach(p => p.setAttribute('aria-pressed', p.dataset.m === d.m)); const l = $('#pickList'); if (l) { l.innerHTML = pickList(); l.scrollTop = 0; } if (el.scrollIntoView) el.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }); },
   pickEx: d => { U.preview = null; addPicked(d.id); },
   exPrev: d => { const l = $('#pickList'); U.pickScroll = l ? l.scrollTop : 0; U.preview = d.id; render(); },
   prevBack: () => { U.preview = null; render(); const l = $('#pickList'); if (l) l.scrollTop = U.pickScroll || 0; },
