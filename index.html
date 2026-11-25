@@ -968,7 +968,6 @@ function vSettings() {
       <hr class="hl"><div class="row sb"><span>Poids de corps<span class="dim" style="display:block;font-size:12px">${st2.kg ? 'pour estimer les calories' : 'à renseigner pour les calories'}</span></span><span class="row" style="gap:6px"><input class="in" style="width:76px" inputmode="decimal" data-f="bodyKg" aria-label="Poids de corps en kg" value="${st2.kg ? esc(fr(st2.kg)) : ''}" placeholder="75"><span class="mut">kg</span></span></div>
       <hr class="hl"><div class="row sb"><span>Repos par défaut</span><span class="row" style="gap:6px"><button class="mini" data-a="pref" data-k="rest" data-d="-15" aria-label="Moins">−</button><b class="num" style="min-width:64px;text-align:center">${mmss(st2.rest * 1000)}</b><button class="mini" data-a="pref" data-k="rest" data-d="15" aria-label="Plus">+</button></span></div></div>
     <div class="card stack"><b>Installer sur ton iPhone</b><ol class="mut" style="margin:0;padding-left:20px;font-size:14px;line-height:1.7"><li>Ouvre Rift dans Safari.</li><li>Touche le bouton Partager.</li><li>Choisis « Sur l'écran d'accueil » : l'icône Rift apparaît et l'appli s'ouvre en plein écran.</li></ol></div>
-    <div class="card"><b>Crédits</b><p class="mut" style="margin:6px 0 0;font-size:13px">Illustrations des exercices : <a href="https://repdb.co" rel="nofollow noopener" target="_blank" style="color:var(--orl)">Exercise data by RepDB (repdb.co)</a>.</p></div>
     <button class="btn danger" data-a="reset">Tout effacer</button>
   </div>`;
 }
