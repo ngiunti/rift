@@ -105,7 +105,8 @@ h2{font-size:20px;font-weight:700}
 .pill[aria-pressed=true]{background:var(--ink);color:#0B0B0D;border-color:var(--ink)}
 .tin{height:44px;width:100%;border-radius:12px;border:1px solid var(--line);background:var(--bg);padding:0 12px;font-size:16px;font-weight:600}
 .tin:focus{border-color:var(--or);outline:none}
-.it{display:grid;grid-template-columns:minmax(0,1fr) 52px 14px 52px auto;gap:6px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.it{display:flex;flex-direction:column;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
+.it .in{width:60px}
 .it .in{height:40px}
 .mini{width:36px;height:40px;border:0;border-radius:10px;background:var(--s2);color:var(--mut);display:inline-flex;align-items:center;justify-content:center;padding:0}
 /* nav, sheets */
@@ -131,6 +132,10 @@ nav.tabs .live{position:absolute;top:10px;right:calc(50% - 18px);width:8px;heigh
 .pic svg{width:100%;height:100%;display:block}.pic.sm{width:44px;height:44px;border-radius:12px;padding:3px}.pic.xs{width:36px;height:36px;border-radius:10px;padding:2px}
 .pic.xl{width:100%;height:auto;aspect-ratio:1;max-width:300px;margin:0 auto;border-radius:28px;padding:18px}
 .thumbs{display:flex;gap:8px}
+.prow{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:8px 0}
+.padd{flex:1;min-height:48px;border:0;background:none;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px;padding:0 2px}
+.padd small{color:var(--dim);font-size:12px}
+.pic.play{position:relative}.pic.play::after{content:'';position:absolute;right:-3px;bottom:-3px;width:16px;height:16px;border-radius:50%;background:var(--or) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7v10l8-5z' fill='%230B0B0D'/%3E%3C/svg%3E") center/12px no-repeat;border:2px solid #17171A}
 .brand{display:flex;align-items:center;gap:8px;font:700 15px 'Space Grotesk',sans-serif;letter-spacing:.02em;margin-bottom:14px}.brand img{width:28px;height:28px;border-radius:8px}
 .empty{color:var(--mut);font-size:14px;text-align:center;padding:24px 8px;margin:0}
 .hl{height:1px;background:var(--line);border:0;margin:0}
@@ -330,6 +335,29 @@ const LIB = [
   ['wrist_roller', 'Rouleau de poignet', 'Avant-bras', 1]
 ].map(([id, name, m, step]) => ({ id, name, m, step }));
 const ALIAS = {"bench": "dc bench press", "incline_db": "di incline dumbbell press", "incline_bb": "incline bench press", "rdl": "rdl romanian deadlift roumain sdt", "deadlift": "sdt deadlift", "stiff_dl": "sdt jambes tendues stiff leg", "sumo_dl": "sdt sumo", "trap_dl": "sdt hex bar", "ohp": "ohp military press overhead press", "squat": "back squat", "pullup": "pull up traction", "chinup": "chin up", "lat_pd": "lat pulldown", "row_bb": "barbell row bent over", "row_db": "dumbbell row", "row_cable": "seated cable row", "hip_thrust": "ht glute", "pushdown": "pushdown triceps barre droite", "pushdown_rope": "rope pushdown corde", "lat_raise": "lateral raise", "face_pull": "face pull", "leg_press": "leg press", "leg_ext": "leg extension", "leg_curl": "seated leg curl ischio", "lying_curl": "lying leg curl", "calf_stand": "standing calf raise", "curl_bb": "barbell curl", "hammer": "hammer curl", "dips": "dips", "fly_cable": "cable crossover fly", "pec_deck": "butterfly", "skull": "skull crusher", "oh_ext": "overhead extension french press", "cgbp": "close grip bench", "bulgarian": "bulgarian split squat", "good_morning": "good morning", "plank": "plank", "crunch_c": "cable crunch", "leg_raise": "leg raise", "pushdown_v": "pushdown v bar", "pushdown_ez": "pushdown ez", "pushdown_rev": "reverse grip pushdown supination", "pushdown_single": "single arm pushdown un bras", "cross_ext": "cross body extension", "oh_ext_rope": "overhead extension rope french press", "oh_ext_ez": "french press overhead", "skull_db": "skull crusher dumbbell", "skull_ez": "skull crusher ez lying extension", "cable_kickback": "cable kickback", "bench_dips": "bench dips", "curl_alt": "alternate curl", "hammer_cable": "rope hammer curl", "curl_ez_cable": "cable curl ez", "curl_single_cable": "single arm cable curl", "curl_high_cable": "high cable curl double biceps", "preacher_db": "preacher dumbbell larry scott", "preacher_machine": "preacher machine larry scott", "cross_hammer": "cross body hammer", "curl_21": "21s", "db_decline": "decline dumbbell press", "hammer_press": "iso lateral chest press machine", "floor_press": "développé au sol", "fly_flat": "dumbbell fly", "pec_fly_machine": "butterfly", "pushup_incline": "incline push up", "pushup_deficit": "deficit push up", "dips_assisted": "assisted dips", "lat_pd_close": "close grip lat pulldown", "lat_pd_wide": "wide grip lat pulldown", "lat_pd_supine": "underhand lat pulldown", "lat_pd_v": "v bar pulldown neutral", "lat_pd_machine": "pulldown machine", "row_cable_wide": "wide seated row", "row_hs": "iso row machine", "yates": "yates row underhand", "pullover_db": "dumbbell pullover", "straight_pd_rope": "straight arm pulldown rope", "deadlift_deficit": "deficit deadlift sdt", "shrug_machine": "trapèzes", "shrug_smith": "trapèzes", "ohp_seated": "seated overhead press", "ohp_smith": "smith shoulder press", "db_press_standing": "standing dumbbell press", "lat_raise_machine": "lateral raise machine", "lat_raise_seated": "seated lateral raise", "lat_raise_lean": "lean away lateral raise", "front_raise_cable": "front raise cable", "front_raise_plate": "plate front raise", "upright_cable": "upright row cable", "heel_squat": "cyclist squat heels elevated", "lunge_db": "dumbbell lunge", "smith_lunge": "smith lunge", "wall_sit": "wall sit", "leg_press_45": "leg press", "rdl_db": "rdl dumbbell romanian", "rdl_smith": "rdl smith romanian", "b_stance": "kickstand rdl", "leg_curl_standing": "standing leg curl", "ham_curl_ball": "swiss ball curl", "hip_thrust_smith": "ht smith", "hip_thrust_single": "single leg hip thrust ht", "glute_kick_machine": "glute kickback machine", "abduction_cable": "cable abduction", "abduction_band": "band abduction", "sumo_squat": "sumo squat", "adduction_cable": "cable adduction", "calf_single": "single leg calf raise", "calf_donkey": "donkey calf raise", "crunch": "crunch", "bicycle": "bicycle crunch", "side_plank": "side plank", "side_bend": "side bend oblique", "landmine_twist": "landmine rotation", "grip": "hand gripper", "wrist_roller": "wrist roller"};
+const SECG = [
+  ['Triceps,Épaules', 'bench incline_db incline_bb db_bench decline smith_bench smith_incline machine_incline chest_press hammer_press floor_press db_decline dips weighted_dips dips_assisted pushup pushup_incline pushup_deficit'],
+  ['Biceps', 'pullup chinup neutral_pullup assisted_pullup lat_pd lat_pd_single lat_pd_close lat_pd_wide lat_pd_supine lat_pd_v lat_pd_machine inverted_row'],
+  ['Biceps,Épaules', 'row_bb row_db row_cable row_cable_single row_cable_wide row_machine row_hs tbar chest_row seal_row pendlay meadows yates kroc'],
+  ['Ischios,Fessiers', 'deadlift sumo_dl trap_dl rack_pull deadlift_deficit back_ext'],
+  ['Triceps', 'ohp db_press arnold push_press machine_press landmine ohp_seated ohp_smith db_press_standing z_press'],
+  ['Dos', 'upright upright_cable cuban face_pull rear_delt reverse_deck rear_cable'],
+  ['Avant-bras', 'hammer hammer_cable cross_hammer zottman'],
+  ['Biceps', 'reverse_curl'],
+  ['Pecs', 'cgbp dips_machine bench_dips diamond jm_press'],
+  ['Fessiers', 'squat front_squat smith_squat box_squat pause_squat belt_squat pendulum hack goblet zercher heel_squat v_squat leg_press leg_press_45 leg_press_single sled'],
+  ['Fessiers,Ischios', 'lunge reverse_lunge bulgarian split_squat step_up smith_lunge lunge_db'],
+  ['Quadriceps,Adducteurs', 'sumo_squat'],
+  ['Fessiers,Dos', 'rdl rdl_db rdl_smith sl_rdl b_stance stiff_dl good_morning'],
+  ['Ischios', 'hip_thrust hip_thrust_machine hip_thrust_smith hip_thrust_single glute_bridge pull_through frog_pump'],
+  ['Ischios,Dos', 'kb_swing'],
+  ['Fessiers', 'ghr'],
+  ['Dos,Abdos', 'farmer'],
+  ['Abdos', 'copenhagen'],
+  ['Avant-bras', 'dead_hang pullup chinup']
+];
+const SEC = {}; SECG.forEach(([m, ids]) => ids.split(' ').forEach(id => { SEC[id] = [...new Set((SEC[id] || []).concat(m.split(',')))]; }));
+const muscOf = x => [x.m].concat((SEC[x.id] || []).filter(m => m !== x.m));
 const exAll = () => LIB.concat(S.meta.customEx || []);
 const exById = id => exAll().find(x => x.id === id) || { id, name: 'Exercice supprimé', m: 'Autre', step: 2.5 };
 
@@ -882,11 +910,11 @@ function vPrograms() {
       const ed = U.editTpl === t.id;
       return `<section class="card stack" aria-label="${esc(t.name)}">
         ${ed ? `<input class="tin" data-f="tplName" data-t="${esc(t.id)}" value="${esc(t.name)}" aria-label="Nom de la séance" maxlength="40">` : `<div class="row sb" style="align-items:flex-start"><div><h2>${esc(t.name)}</h2><div class="mut" style="font-size:13px;margin-top:4px">${esc(tplMuscles(t)) || 'Vide'} · ${t.items.length} exercices · ${tplSets(t)} séries</div></div><button class="btn sm sec" data-a="editTpl" data-t="${esc(t.id)}">Modifier</button></div>`}
-        ${ed ? t.items.map((i, k) => `<div class="it"><span style="font-size:14px;font-weight:600;line-height:1.25">${esc(exById(i.ex).name)}</span>
-            <input class="in" inputmode="numeric" aria-label="Séries" data-f="itSets" data-t="${esc(t.id)}" data-i="${k}" value="${esc(i.sets)}"><span class="dim" style="text-align:center">×</span>
-            <input class="in" inputmode="numeric" aria-label="Répétitions visées" data-f="itReps" data-t="${esc(t.id)}" data-i="${k}" value="${esc(i.reps)}">
-            <span class="row" style="gap:4px"><button class="mini" data-a="itMove" data-d="-1" data-t="${esc(t.id)}" data-i="${k}" aria-label="Monter">${ic('up', 16)}</button><button class="mini" data-a="itDel" data-t="${esc(t.id)}" data-i="${k}" aria-label="Retirer">${ic('x', 16)}</button></span></div>`).join('')
-          : `<div class="stack" style="gap:8px">${t.items.map(i => `<div class="row" style="font-size:14px"><span class="pic xs">${picto(i.ex, false)}</span><span style="flex:1">${esc(exById(i.ex).name)}</span><span class="dim num">${i.sets}×${i.reps}</span></div>`).join('') || '<span class="mut">Aucun exercice</span>'}</div>`}
+        ${ed ? t.items.map((i, k) => `<div class="it"><div class="row" style="gap:10px"><button class="pic sm play" data-a="exView" data-id="${esc(i.ex)}" aria-label="Voir le mouvement : ${esc(exById(i.ex).name)}">${picto(i.ex, false)}</button><b style="flex:1;font-size:15px;line-height:1.25">${esc(exById(i.ex).name)}</b>
+            <button class="mini" data-a="itMove" data-d="-1" data-t="${esc(t.id)}" data-i="${k}" aria-label="Monter">${ic('up', 16)}</button><button class="mini" data-a="itDel" data-t="${esc(t.id)}" data-i="${k}" aria-label="Retirer">${ic('x', 16)}</button></div>
+            <div class="row" style="gap:8px;padding-left:56px"><input class="in" inputmode="numeric" aria-label="Séries" data-f="itSets" data-t="${esc(t.id)}" data-i="${k}" value="${esc(i.sets)}"><span class="mut" style="font-size:13px">séries de</span>
+            <input class="in" inputmode="numeric" aria-label="Répétitions visées" data-f="itReps" data-t="${esc(t.id)}" data-i="${k}" value="${esc(i.reps)}"><span class="mut" style="font-size:13px">reps</span></div></div>`).join('')
+          : `<div class="stack" style="gap:8px">${t.items.map(i => `<div class="row" style="font-size:14px"><button class="pic xs" data-a="exView" data-id="${esc(i.ex)}" aria-label="Voir le mouvement : ${esc(exById(i.ex).name)}">${picto(i.ex, false)}</button><span style="flex:1">${esc(exById(i.ex).name)}</span><span class="dim num">${i.sets}×${i.reps}</span></div>`).join('') || '<span class="mut">Aucun exercice</span>'}</div>`}
         ${ed ? `<button class="btn ghost" data-a="pick" data-c="tpl" data-t="${esc(t.id)}">${ic('plus', 18)}Ajouter un exercice</button>
           <div class="row" style="gap:8px"><button class="btn sm danger" data-a="delTpl" data-t="${esc(t.id)}">Supprimer</button><button class="btn sm" style="flex:1" data-a="editTpl" data-t="">Terminé</button></div>`
           : `<button class="btn" data-a="start" data-t="${esc(t.id)}">${ic('play', 18)}Démarrer</button>`}
@@ -920,6 +948,14 @@ function vSettings() {
 
 function vSheet() {
   const sh = U.sheet; if (!sh) return '';
+  if (sh.t === 'pick' && U.preview) {
+    const X = exById(U.preview), b = recordOf(U.preview), dest = sh.ctx === 'tpl' ? 'au programme' : sh.ctx === 'swap' ? 'à la place' : 'à la séance';
+    return `<div class="dim-bg" data-a="closeSheet"><div class="sheet" role="dialog" aria-label="${esc(X.name)}" data-stop="1"><div class="grab"></div>
+      <div class="row" style="gap:10px"><button class="ico round" data-a="prevBack" aria-label="Retour à la liste">${ic('back', 20)}</button><div style="flex:1"><h2>${esc(X.name)}</h2><div class="mut" style="font-size:13px;margin-top:4px"><span class="or">${esc(X.m)}</span>${muscOf(X).length > 1 ? ' · ' + esc(muscOf(X).slice(1).join(', ')) : ''}</div></div></div>
+      <div class="pic xl" style="max-width:260px">${picto(U.preview)}</div>
+      ${b ? `<div class="mut" style="text-align:center;font-size:14px">Ton record : <b class="amb">${fr(b.kg)} kg × ${b.reps}</b></div>` : ''}
+      <div class="row" style="gap:8px"><button class="btn sec" style="flex:1" data-a="prevBack">Retour</button><button class="btn" style="flex:1.4" data-a="pickEx" data-id="${esc(U.preview)}">${ic('plus', 18)}Ajouter</button></div></div></div>`;
+  }
   if (sh.t === 'pick') return `<div class="dim-bg" data-a="closeSheet"><div class="sheet" role="dialog" aria-label="Ajouter un exercice" data-stop="1"><div class="grab"></div>
     <div class="row sb"><h2>Ajouter un exercice</h2><button class="ico round" data-a="closeSheet" aria-label="Fermer">${ic('x', 18)}</button></div>
     <div class="row" style="position:relative"><span class="dim" style="position:absolute;left:12px;top:12px">${ic('search', 18)}</span><input class="tin" style="padding-left:40px" id="pickQ" data-f="pickQ" placeholder="Rechercher ou créer" value="${esc(U.pickQ)}" autocomplete="off"></div>
@@ -928,7 +964,7 @@ function vSheet() {
   if (sh.t === 'exView') {
     const X = exById(sh.id);
     return `<div class="dim-bg" data-a="closeSheet"><div class="sheet" role="dialog" aria-label="${esc(X.name)}" data-stop="1"><div class="grab"></div>
-      <div class="row sb"><div><h2>${esc(X.name)}</h2><div class="mut" style="font-size:13px;margin-top:4px">Muscle ciblé : <span class="or">${esc(X.m)}</span></div></div><button class="ico round" data-a="closeSheet" aria-label="Fermer">${ic('x', 18)}</button></div>
+      <div class="row sb"><div><h2>${esc(X.name)}</h2><div class="mut" style="font-size:13px;margin-top:4px">Muscle ciblé : <span class="or">${esc(X.m)}</span>${muscOf(X).length > 1 ? ' · aussi : ' + esc(muscOf(X).slice(1).join(', ')) : ''}</div></div><button class="ico round" data-a="closeSheet" aria-label="Fermer">${ic('x', 18)}</button></div>
       <div class="pic xl">${picto(sh.id)}</div>
       ${(() => { const l = lastWith(sh.id), b = recordOf(sh.id); return `<div class="kpis"><div class="kpi"><span class="mut" style="font-size:12px">Record</span><b>${b ? `${fr(b.kg)} kg × ${b.reps}` : '–'}</b></div><div class="kpi"><span class="mut" style="font-size:12px">Dernière fois</span><b style="font-size:18px">${l ? rel(l.start) : 'jamais'}</b></div></div>`; })()}</div></div>`;
   }
@@ -947,12 +983,14 @@ function pickList() {
   const q = U.pickQ.trim().toLowerCase(), nq = norm(q);
   const words = nq.replace(/[-'’]/g, ' ').split(/\s+/).filter(Boolean);
   const hay = x => norm(x.name + ' ' + (ALIAS[x.id] || '')).replace(/[-'’]/g, ' ');
-  const list = exAll().filter(x => (!U.pickM || x.m === U.pickM) && (!q || (hw => words.every(w => hw.some(t => t.startsWith(w))))(hay(x).split(/\s+/)))).sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+  const list = exAll().filter(x => (!U.pickM || muscOf(x).includes(U.pickM)) && (!q || (hw => words.every(w => hw.some(t => t.startsWith(w))))(hay(x).split(/\s+/)))).sort((a, b) => a.name.localeCompare(b.name, 'fr'));
   const exact = exAll().some(x => x.name.toLowerCase() === q);
-  const row = x => `<button class="opt" data-a="pickEx" data-id="${esc(x.id)}"><span class="row" style="gap:12px"><span class="pic sm">${picto(x.id, false)}</span><span>${esc(x.name)}</span></span><small>${esc(x.m)}</small></button>`;
+  const row = x => `<div class="prow"><button class="pic sm play" data-a="exPrev" data-id="${esc(x.id)}" aria-label="Voir le mouvement : ${esc(x.name)}">${picto(x.id, false)}</button><button class="padd" data-a="pickEx" data-id="${esc(x.id)}" aria-label="Ajouter ${esc(x.name)}"><span><span style="display:block">${esc(x.name)}</span><small>${esc(muscOf(x).join(' · '))}</small></span><span class="or" style="flex:none">${ic('plus', 20, 2.4)}</span></button></div>`;
+  const sub = t => `<div class="dim" style="font-size:12px;font-weight:600;padding:14px 2px 2px">${esc(t)}</div>`;
+  const split = (g, m) => { const p = g.filter(x => x.m === m), s = g.filter(x => x.m !== m); return p.map(row).join('') + (s.length ? sub('Sollicitent aussi : ' + m.toLowerCase()) + s.map(row).join('') : ''); };
   const body = (!q && !U.pickM)
-    ? MUSCLES.concat(['Autre']).map(m => { const g = list.filter(x => (MUSCLES.includes(x.m) ? x.m : 'Autre') === m); return g.length ? `<div class="eyebrow" style="padding:16px 2px 4px;color:var(--orl)">${esc(m)} · ${g.length}</div>` + g.map(row).join('') : ''; }).join('')
-    : list.map(row).join('');
+    ? MUSCLES.concat(['Autre']).map(m => { const g = list.filter(x => m === 'Autre' ? !MUSCLES.includes(x.m) : muscOf(x).includes(m)); return g.length ? `<div class="eyebrow" style="padding:16px 2px 4px;color:var(--orl)">${esc(m)} · ${g.filter(x => x.m === m || m === 'Autre').length}</div>` + (m === 'Autre' ? g.map(row).join('') : split(g, m)) : ''; }).join('')
+    : U.pickM && !q ? split(list, U.pickM) : list.map(row).join('');
   return (q && !exact ? `<button class="opt" data-a="createEx"><span>Créer « ${esc(U.pickQ.trim())} »</span><small>${U.pickM ? esc(U.pickM) : 'choisis un muscle'}</small></button>` : '')
     + body + (!list.length && !q ? '<p class="empty">Aucun exercice.</p>' : '');
 }
@@ -978,7 +1016,7 @@ function render() {
   if (U.view === 'stats') drawChart();
 }
 function go(v) { U.view = v; U.sheet = null; render(); window.scrollTo(0, 0); }
-function openPicker(ctx, tpl) { U.sheet = { t: 'pick', ctx, tpl }; U.pickQ = ''; U.pickM = ''; render(); }
+function openPicker(ctx, tpl) { U.preview = null; U.sheet = { t: 'pick', ctx, tpl }; U.pickQ = ''; U.pickM = ''; render(); }
 
 /* ---------- retours : toast, vibration, son ---------- */
 let toastT = 0;
@@ -1034,7 +1072,9 @@ const A = {
   exSwap: () => { const e = U.sheet.e; openPicker('swap'); U.sheet.e = e; },
   pick: d => openPicker(d.c, d.t),
   pickM: d => { U.pickM = d.m; const l = $('#pickList'); render(); const q = $('#pickQ'); if (q && U.pickQ) q.focus(); },
-  pickEx: d => addPicked(d.id),
+  pickEx: d => { U.preview = null; addPicked(d.id); },
+  exPrev: d => { const l = $('#pickList'); U.pickScroll = l ? l.scrollTop : 0; U.preview = d.id; render(); },
+  prevBack: () => { U.preview = null; render(); const l = $('#pickList'); if (l && U.pickScroll) l.scrollTop = U.pickScroll; },
   createEx: () => {
     const name = U.pickQ.trim().slice(0, 50); if (!name) return;
     if (!U.pickM) { toast('Choisis d\'abord le muscle travaillé'); return; }
