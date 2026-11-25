@@ -854,7 +854,7 @@ const A = {
   closeSheet: (d, el, e) => { if (e.target.closest('[data-stop]') && el.classList.contains('dim-bg')) return; U.sheet = null; render(); },
   dlgNo: (d, el, e) => { if (e.target.closest('[data-stop]') && el.classList.contains('dim-bg')) return; U.dialog = null; render(); },
   dlgOk: () => { const f = U.dialog.fn; U.dialog = null; f(); render(); },
-  delW: d => ask('Supprimer cette séance ?', 'Elle disparaîtra de ton historique et de tes stats, sur tous tes appareils.', 'Supprimer', () => { delete S.workouts[d.id]; S.dirty = S.dirty.filter(i => i !== d.id); S.pendingDel.push(d.id); saveLocal(); flush(); go('stats'); }, true),
+  delW: d => ask('Supprimer cette séance ?', 'Elle disparaîtra de ton historique et de tes stats, sur tous tes appareils.', 'Supprimer', () => { delete S.workouts[d.id]; S.dirty = S.dirty.filter(i => i !== d.id); S.pendingDel.push(d.id); S.meta.deleted = (S.meta.deleted || []).concat(d.id).slice(-300); touchMeta(); flush(); go('stats'); }, true),
   setProg: d => { S.meta.activeProgramId = d.id; U.editTpl = null; touchMeta(); render(); },
   newProg: () => { const p = { id: gid('p-'), name: 'Nouveau programme', templates: [{ id: gid('t-'), name: 'Séance A', items: [] }] }; S.meta.programs.push(p); S.meta.activeProgramId = p.id; U.editTpl = p.templates[0].id; touchMeta(); render(); },
   delProg: () => ask('Supprimer ce programme ?', 'Tes séances passées restent dans l\'historique.', 'Supprimer', () => { S.meta.programs = S.meta.programs.filter(p => p.id !== S.meta.activeProgramId); S.meta.activeProgramId = S.meta.programs[0].id; touchMeta(); }, true),
@@ -942,7 +942,7 @@ async function flush() {
   if (!FS || !USER || flushing) return; flushing = true; let metaSent = false;
   try {
     while (S.pendingDel.length) { await FS.deleteDoc(wref(S.pendingDel[0])); S.pendingDel.shift(); saveLocal(); }
-    while (S.dirty.length) { const id = S.dirty[0], w = S.workouts[id]; if (w) await FS.setDoc(wref(id), clone(w)); S.dirty.shift(); saveLocal(); }
+    while (S.dirty.length) { const id = S.dirty[0], w = S.workouts[id]; if (w) await FS.setDoc(wref(id), { ...clone(w), _u: Date.now() }); S.dirty.shift(); saveLocal(); }
     if (S.metaDirty) { S.metaDirty = false; metaSent = true; saveLocal(); await FS.setDoc(mref(), clone(S.meta)); }
     cloud = 'on';
   } catch (e) {
@@ -954,14 +954,17 @@ async function flush() {
 }
 async function pull() {
   try {
-    const [ws, ms] = await Promise.all([FS.getDocs(FS.collection(FS.db, 'users', USER.uid, 'workouts')), FS.getDoc(mref())]);
+    // Synchro incrémentale : on ne relit que les séances modifiées depuis la dernière fois.
+    const since = S.lastPull || 0, started = Date.now(), col = FS.collection(FS.db, 'users', USER.uid, 'workouts');
+    const [ws, ms] = await Promise.all([FS.getDocs(since ? FS.query(col, FS.where('_u', '>', since - 300000)) : col), FS.getDoc(mref())]);
     const ids = new Set();
-    ws.forEach(d => { ids.add(d.id); if (!S.workouts[d.id] && !S.pendingDel.includes(d.id)) S.workouts[d.id] = d.data(); });
+    ws.forEach(d => { ids.add(d.id); if (!S.pendingDel.includes(d.id) && !S.dirty.includes(d.id)) { const v = d.data(); delete v._u; S.workouts[d.id] = v; } });
     const cm = ms.exists() ? ms.data() : null;
+    for (const id of (cm && cm.deleted) || []) if (S.workouts[id] && !S.dirty.includes(id)) delete S.workouts[id];
     if (cm && (cm.updatedAt || 0) > (S.meta.updatedAt || 0)) { S.meta = cm; S.meta.customEx = S.meta.customEx || []; S.metaDirty = false; }
     else if (!cm || (S.meta.updatedAt || 0) > (cm.updatedAt || 0)) S.metaDirty = true;
-    for (const k of Object.keys(S.workouts)) if (!ids.has(k) && !S.dirty.includes(k)) S.dirty.push(k);
-    cloud = 'on'; saveLocal();
+    if (!since) for (const k of Object.keys(S.workouts)) if (!ids.has(k) && !S.dirty.includes(k)) S.dirty.push(k);
+    S.lastPull = started; cloud = 'on'; saveLocal();
     if (!U.dialog && !(document.activeElement && document.activeElement.matches('input'))) render();
     flush();
   } catch (e) { cloud = 'err'; paintSync(); setTimeout(() => USER && pull(), 30000); }
